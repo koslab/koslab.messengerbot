@@ -143,7 +143,7 @@ use this, just switch ``WebHook`` to ``AMQPWebHook`` and provide it with the
 uri to the transport. The queue is implemented using 
 `Kombu <http://kombu.rtfd.org>`_, so you may also use 
 `other transports
-<https://kombu.readthedocs.io/en/latest/userguide/connections.html#amqp-transports>`
+<https://kombu.readthedocs.io/en/latest/userguide/connections.html#amqp-transports>`_
 that are supported by Kombu
 
 .. code-block:: python
