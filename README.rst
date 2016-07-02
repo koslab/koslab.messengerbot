@@ -3,7 +3,7 @@
 Introduction
 ============
 
-koslab.messengerbot makes writing Facebook Messenger Bot easier by providing
+``koslab.messengerbot`` makes writing Facebook Messenger Bot easier by providing
 a framework that handles and abstract the webhook API. It is originally
 developed using Morepath (http://morepath.rtfd.com) as the web request 
 processor, but this library should work with any Python web frameworks
@@ -11,7 +11,7 @@ processor, but this library should work with any Python web frameworks
 Example: Writing An Echo Bot on Morepath
 ==========================================
 
-Lets install morepath and koslab.messengerbot
+Lets install ``morepath`` and ``koslab.messengerbot``
 
 .. code-block:: bash
 
