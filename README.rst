@@ -11,12 +11,16 @@ processor, but this library should work with any Python web frameworks
 Example: Writing An Echo Bot on Morepath
 ==========================================
 
-Lets install morepath and koslab.messengerbot::
+Lets install morepath and koslab.messengerbot
+
+.. code-block:: bash
 
    pip install morepath
    pip install https://github.com/koslab/koslab.messengerbot.git
 
-``echobot.py``::
+Now lets write our EchoBot in ``echobot.py``
+
+.. code-block:: python
 
    import morepath
    from koslab.messengerbot.webhook import WebHook
@@ -62,7 +66,9 @@ Lets install morepath and koslab.messengerbot::
    if __name__ == '__main__':
       morepath.run(App())
 
-Start the bot::
+Start the bot
+
+.. code-block:: bash
 
    python echobot.py
 
