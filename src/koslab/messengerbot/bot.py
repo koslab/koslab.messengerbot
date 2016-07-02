@@ -47,6 +47,24 @@ class BaseMessengerBot(object):
     def account_linking_hook(self, event):
         pass
 
+    def user_profile(self, user):
+        #
+        url = 'https://graph.facebook.com/v2.6/%s' % user['id']
+        fields=['first_name','last_name','profile_pic','locale',
+                'timezone','gender']
+        resp = requests.get(url, data={'fields': ','.join(fields)})
+        resp_data = resp.json()
+        if resp_data.get('error', None):
+            return {
+                'first_name': '',
+                'last_name': '',
+                'profile_pic': '',
+                'locale': 'en_US',
+                'timezone': 0,
+                'gender': ''
+            }
+        return resp_data
+
     def send(self, recipient, message=None, sender_action=None):
         request_data = { 'recipient': recipient }
         if not (message or sender_action):
@@ -63,7 +81,7 @@ class BaseMessengerBot(object):
                     self.page_access_token), json=request_data)
         resp_data = resp.json()
         error = resp_data.get('error', None)
-        if error['code'] != 2:
+        if error and error['code'] != 2:
             # rate limit error, retry
             if error['code'] == 4:
                 time.sleep(5)
