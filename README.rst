@@ -134,3 +134,30 @@ Facebook Messenger Bot service. Parameters are:
    ``typing_off``
 
 **Note:** If ``message`` is defined, ``sender_action`` value will be ignored.
+
+Messenger Bot with AMQP
+========================
+
+``AMQPWebHook`` provides an implementation of webhook with AMQP queuing. To
+use this, just switch ``WebHook`` to ``AMQPWebHook`` and provide it with the
+uri to the transport. The queue is implemented using 
+`Kombu <http://kombu.rtfd.org>`_, so you may also use 
+`other transports
+<https://kombu.readthedocs.io/en/latest/userguide/connections.html#amqp-transports>`
+that are supported by Kombu
+
+.. code-block:: python
+
+   webhook = AMQPWebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
+       page_bots={
+           '<PAGE ID>': EchoBot('<YOUR PAGE ACCESS TOKEN>')
+       },
+       transport='amqp://<username>:<password>@<host>:5672')
+
+When at bot startup, ensure that you start the consumer process by running
+
+.. code-block::
+
+   if __name__ == '__main__':
+      webhook.start_consumer()
+      morepath.run(App())

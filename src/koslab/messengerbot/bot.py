@@ -64,4 +64,3 @@ class BaseMessengerBot(object):
         else:
             logger.info(
                 'Webhook received unknown messagingEvent %s' % json.dumps(event))
-
