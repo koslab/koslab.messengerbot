@@ -42,7 +42,7 @@ Now lets write our EchoBot in ``echobot.py``
 
    webhook = WebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
        page_bots={
-           '<PAGE ID>': EchoBot('<YOUR PAGE ACCESS TOKEN>')
+           '<PAGE ID>': (EchoBot, {'page_access_token':'<YOUR PAGE ACCESS TOKEN>'})
        })
 
    class App(morepath.App):
@@ -150,7 +150,7 @@ that are supported by Kombu
 
    webhook = KombuWebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
        page_bots={
-           '<PAGE ID>': EchoBot('<YOUR PAGE ACCESS TOKEN>')
+           '<PAGE ID>': (EchoBot, {'page_access_token': '<YOUR PAGE ACCESS TOKEN>'})
        },
        transport='amqp://<username>:<password>@<host>:5672')
 
