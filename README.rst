@@ -182,6 +182,15 @@ Facebook Messenger Bot service. Parameters are:
 
 **Note:** If ``message`` is defined, ``sender_action`` value will be ignored.
 
+
+Postback Payload
+================
+
+Postback values may be a JSON object or a string. In the case of
+Postback in JSON object format, an ``event`` key is required for routing postbacks
+to the right handler by ``postback_hook``. For string postback values, the
+whole string is treated as the event key.
+
 Messenger Bot with AMQP
 ========================
 

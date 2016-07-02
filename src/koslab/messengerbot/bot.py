@@ -36,9 +36,13 @@ class BaseMessengerBot(object):
         pass
 
     def postback_hook(self, event):
-        payload = event['postback']['payload']
+        try:
+            payload = json.loads(event['postback']['payload'])
+            ev = payload['event']
+        except:
+            ev = payload = event['postback']['payload']
         for pyl, method in self.POSTBACK_HANDLERS.items():
-            if re.match(pyl, payload):
+            if re.match(pyl, ev):
                 getattr(self, method)(event)
 
     def read_hook(self, event):
