@@ -2,6 +2,7 @@ import requests
 from koslab.messengerbot.logger import logger
 import json
 import re
+import time
 
 class BaseMessengerBot(object):
 
@@ -60,6 +61,13 @@ class BaseMessengerBot(object):
         url = 'https://graph.facebook.com/v2.6/me/messages'
         resp = requests.post('%s?access_token=%s' % (url, 
                     self.page_access_token), json=request_data)
+        resp_data = resp.json()
+        error = resp_data.get('error', None)
+        if error['code'] != 2:
+            # rate limit error, retry
+            if error['code'] == 4:
+                time.sleep(5)
+                self.send(recipient, message, sender_action)
         return resp
 
     def handle_event(self, event):
