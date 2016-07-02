@@ -41,3 +41,27 @@ class BaseMessengerBot(object):
                     self.page_access_token), json=request_data)
         if resp.status_code == 200:
             data = resp.json()
+
+    def handle_event(self, event):
+        if event.get('optin', None):
+            logger.debug('Authentication hook: %s' % json.dumps(event))
+            self.authentication_hook(event)
+        elif event.get('message', None):
+            logger.debug('Message hook: %s' % json.dumps(event))
+            self.message_hook(event)
+        elif event.get('delivery', None):
+            logger.debug('Message delivered hook: %s' % json.dumps(event))
+            self.message_delivered_hook(event)
+        elif event.get('postback', None):
+            logger.debug('Postback hook: %s' % json.dumps(event))
+            self.postback_hook(event)
+        elif event.get('read', None):
+            logger.debug('Read hook: %s' % json.dumps(event))
+            self.read_hook(event)
+        elif event.get('account_linking', None):
+            logger.debug('Account linking hook: %s' % json.dumps(event))
+            self.account_linking_hook(event)
+        else:
+            logger.info(
+                'Webhook received unknown messagingEvent %s' % json.dumps(event))
+

@@ -30,35 +30,7 @@ class WebHook(object):
                     timestamp = entry['time']
                     bot = self.get_bot(page_id) 
                     for event in entry['messaging']:
-                        if event.get('optin', None):
-                            logger.debug(
-                                'Authentication hook: %s' % json.dumps(event))
-                            bot.authentication_hook(event)
-                        elif event.get('message', None):
-                            logger.debug(
-                                'Message hook: %s' % json.dumps(event))
-                            bot.message_hook(event)
-                        elif event.get('delivery', None):
-                            logger.debug(
-                                'Message delivered hook: %s' % json.dumps(
-                                                                    event))
-                            bot.message_delivered_hook(event)
-                        elif event.get('postback', None):
-                            logger.debug(
-                                'Postback hook: %s' % json.dumps(event))
-                            bot.postback_hook(event)
-                        elif event.get('read', None):
-                            logger.debug('Read hook: %s' % json.dumps(event))
-                            bot.read_hook(event)
-                        elif event.get('account_linking', None):
-                            logger.debug(
-                                'Account linking hook: %s' % json.dumps(
-                                                                event))
-                            bot.account_linking_hook(event)
-                        else:
-                            logger.info(
-                                'Webhook received unknown '
-                                'messagingEvent %s' % json.dumps(event))
+                        bot.handle_event(event)
             return Response(status=200)
 
     def get_bot(self, page_id):
