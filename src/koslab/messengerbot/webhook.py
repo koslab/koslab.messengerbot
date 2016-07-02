@@ -1,10 +1,19 @@
 from koslab.messengerbot.request import Response
 from koslab.messengerbot.logger import logger
 from kombu import Connection, Exchange, Queue
-from multiprocessing import Process
+from multiprocessing import Process, Pool
 import json
 
 __all__ = ['WebHook', 'AMQPWebHook']
+
+def spawn_bot(bot_class, bot_args, event):
+    bot = bot_class(**bot_args)
+    bot.handle_event(event)
+
+def spawn_bot_amqp(bot_class, bot_args, event, message):
+    bot = bot_class(**bot_args)
+    bot.handle_event(event)
+    message.ack()
 
 class WebHook(object):
     '''
@@ -37,9 +46,11 @@ class WebHook(object):
             for entry in data['entry']:
                 page_id = entry['id']
                 timestamp = entry['time']
-                bot = self.get_bot(page_id) 
+                bot_class, bot_args = self.get_bot(page_id)
                 for event in entry['messaging']:
-                    bot.handle_event(event)
+                    Process(target=spawn_bot, 
+                            args=(bot_class, bot_args, event)).start()
+
         return Response(status=200)
 
     def get_bot(self, page_id):
@@ -83,14 +94,15 @@ class AMQPWebHook(WebHook):
                         declare=[self.queue])
 
     def consume(self):
-        def spawn_bot(event, message):
+        def worker(event, message):
             page_id = event['recipient']['id']
-            bot = self.get_bot(page_id)
-            bot.handle_event(event)
-            message.ack()
+            bot_class, bot_args = self.get_bot(page_id)
+            p = Process(target=spawn_bot_amqp, args=(bot_class, bot_args, event,
+                message))
+            p.start()
 
         with Connection(self.transport) as conn:
-            with conn.Consumer(self.queue, callbacks=[spawn_bot]) as consumer:
+            with conn.Consumer(self.queue, callbacks=[worker]) as consumer:
                 while True:
                     conn.drain_events()
 
