@@ -4,7 +4,7 @@ Introduction
 ============
 
 ``koslab.messengerbot`` makes writing 
-`Facebook Messenger Bot <https://developers.facebook.com/docs/messenger-platform>`_ i
+`Facebook Messenger Bot <https://developers.facebook.com/docs/messenger-platform/product-overview>`_
 easier by providing a framework that handles and abstract 
 the webhook API. It is originally developed using `Morepath <http://morepath.rtfd.com>`_
 as the web request processor, but this library should work with any Python web frameworks
