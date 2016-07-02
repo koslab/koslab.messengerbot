@@ -101,25 +101,25 @@ Bot Configuration
 
    .. code-block:: python
 
-   GREETING_TEXT = 'Hello World!'
+      GREETING_TEXT = 'Hello World!'
 
 ``STARTUP_MESSAGE``
 	Message object to be sent when **Get Started** menu is clicked. Default value is:
 
    .. code-block:: python
 
-   STARTUP_MESSAGE = { 'text' : 'Hello World!' }
+      STARTUP_MESSAGE = { 'text' : 'Hello World!' }
 
 ``PERSISTENT_MENU``
 	`Persistent menu <https://developers.facebook.com/docs/messenger-platform/thread-settings/persistent-menu>`_ ``call_for_action`` buttons configuration. Default value is:
 
 	.. code-block:: python
 
-	PERSISTENT_MENU = [{
-		'type': 'postback',
-		'title': 'Get Started',
-		'payload': 'messengerbot.get_started'
-	}]
+   	PERSISTENT_MENU = [{
+   		'type': 'postback',
+   		'title': 'Get Started',
+   		'payload': 'messengerbot.get_started'
+   	}]
  
 
 Bot Hooks
