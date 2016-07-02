@@ -4,7 +4,7 @@ from kombu import Connection, Exchange, Queue
 from multiprocessing import Process, Pool
 import json
 
-__all__ = ['WebHook', 'AMQPWebHook']
+__all__ = ['WebHook', 'KombuWebHook']
 
 def spawn_bot(bot_class, bot_args, event):
     bot = bot_class(**bot_args)
@@ -59,14 +59,14 @@ class WebHook(object):
             raise ValueError('Unable to select bot for page %s ' % page_id)
         return bot
 
-class AMQPWebHook(WebHook):
+class KombuWebHook(WebHook):
     '''
-    Web hook for AMQP queue
+    Web hook for Kombu queue
 
     :param: validation_token: hub validation token
     '''
     def __init__(self, validation_token, page_bots, transport, exchange=None, queue=None):
-        super(AMQPWebHook, self).__init__(validation_token, page_bots)
+        super(KombuWebHook, self).__init__(validation_token, page_bots)
         self.page_bots = page_bots
         self.transport = transport
         if exchange is None:
@@ -107,6 +107,6 @@ class AMQPWebHook(WebHook):
                     conn.drain_events()
 
     def start_consumer(self):
-        print "Running %s AMQP consumer" % self
+        print "Running %s Kombu consumer" % self
         p = Process(target=self.consume)
         p.start()

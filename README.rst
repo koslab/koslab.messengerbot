@@ -138,8 +138,8 @@ Facebook Messenger Bot service. Parameters are:
 Messenger Bot with AMQP
 ========================
 
-``AMQPWebHook`` provides an implementation of webhook with AMQP queuing. To
-use this, just switch ``WebHook`` to ``AMQPWebHook`` and provide it with the
+``KombuWebHook`` provides an implementation of webhook with AMQP queuing. To
+use this, just switch ``WebHook`` to ``KombuWebHook`` and provide it with the
 uri to the transport. The queue is implemented using 
 `Kombu <http://kombu.rtfd.org>`_, so you may also use 
 `other transports
@@ -148,7 +148,7 @@ that are supported by Kombu
 
 .. code-block:: python
 
-   webhook = AMQPWebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
+   webhook = KombuWebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
        page_bots={
            '<PAGE ID>': EchoBot('<YOUR PAGE ACCESS TOKEN>')
        },
