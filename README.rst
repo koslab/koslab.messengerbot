@@ -156,7 +156,7 @@ that are supported by Kombu
 
 When at bot startup, ensure that you start the consumer process by running
 
-.. code-block::
+.. code-block:: python
 
    if __name__ == '__main__':
       webhook.start_consumer()
