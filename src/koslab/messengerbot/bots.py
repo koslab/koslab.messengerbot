@@ -4,7 +4,7 @@ from kombu import Connection, Exchange, Queue
 from multiprocessing import Process, Pool
 import json
 
-__all__ = ['WebHook', 'KombuWebHook']
+__all__ = ['Bots', 'KombuBots']
 
 def spawn_bot(bot_class, bot_args, event):
     bot = bot_class(**bot_args)
@@ -15,7 +15,7 @@ def spawn_bot_amqp(bot_class, bot_args, event, message):
     bot.handle_event(event)
     message.ack()
 
-class WebHook(object):
+class Bots(object):
     '''
     :param: validation_token: hub validation token
     :param: page_bots: a dictionary of page id and MessengerBot implementation
@@ -24,13 +24,13 @@ class WebHook(object):
         self.validation_token = validation_token
         self.page_bots = page_bots
 
-    def handle(self, request):
+    def webhook(self, request):
         if request.method == 'GET':
-            return self.handle_get(request)
+            return self.webhook_get(request)
         if request.method == 'POST':
-            return self.handle_post(request)
+            return self.webhook_post(request)
 
-    def handle_get(self, request):
+    def webhook_get(self, request):
         if (request.get('hub.mode') == 'subscribe' and 
             request.get('hub.verify_token') == self.validation_token):
             logger.info('Received hub challenge')
@@ -39,7 +39,7 @@ class WebHook(object):
             logger.info('Invalid hub challenge')
             return Response(status=403)
 
-    def handle_post(self, request):
+    def webhook_post(self, request):
         data = json.loads(request.body)
 
         if (data['object'] == 'page'):
@@ -69,14 +69,14 @@ class WebHook(object):
     def initialize(self):
         self.init_bots()
 
-class KombuWebHook(WebHook):
+class KombuBots(Bots):
     '''
     Web hook for Kombu queue
 
     :param: validation_token: hub validation token
     '''
     def __init__(self, validation_token, page_bots, transport, exchange=None, queue=None):
-        super(KombuWebHook, self).__init__(validation_token, page_bots)
+        super(KombuBots, self).__init__(validation_token, page_bots)
         self.page_bots = page_bots
         self.transport = transport
         if exchange is None:
@@ -86,7 +86,7 @@ class KombuWebHook(WebHook):
             queue = Queue('messages', exchange=exchange, routing_key='messages')
         self.queue = queue
 
-    def handle_post(self, request):
+    def webhook_post(self, request):
         data = json.loads(request.body)
         if (data['object'] == 'page'):
             for entry in data['entry']:
@@ -117,7 +117,7 @@ class KombuWebHook(WebHook):
                     conn.drain_events()
 
     def initialize(self):
-        super(KombuWebHook, self).init_bots()
+        super(KombuBots, self).init_bots()
         print "Running %s Kombu consumer" % self
         p = Process(target=self.consume)
         p.start()

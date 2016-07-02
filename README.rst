@@ -6,7 +6,7 @@ Introduction
 ``koslab.messengerbot`` makes writing 
 `Facebook Messenger Bot <https://developers.facebook.com/docs/messenger-platform/product-overview>`_
 easier by providing a framework that handles and abstract 
-the webhook API. It is originally developed using `Morepath <http://morepath.rtfd.com>`_
+the Bots API. It is originally developed using `Morepath <http://morepath.rtfd.com>`_
 as the web request processor, but this library should work with any Python web frameworks
 
 Example: Writing An Echo Bot on Morepath
@@ -24,7 +24,7 @@ Now lets write our EchoBot in ``echobot.py``
 .. code-block:: python
 
    import morepath
-   from koslab.messengerbot.webhook import WebHook
+   from koslab.messengerbot.bots import Bots
    from koslab.messengerbot.request import WebObRequestAdapter
 
    from koslab.messengerbot.bot import BaseMessengerBot
@@ -42,7 +42,7 @@ Now lets write our EchoBot in ``echobot.py``
 
    # webhook implementation on morepath
 
-   webhook = WebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
+   bots = Bots(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
        page_bots={
            '<PAGE ID>': (EchoBot, {'page_access_token':'<YOUR PAGE ACCESS TOKEN>'})
        })
@@ -57,17 +57,17 @@ Now lets write our EchoBot in ``echobot.py``
    @App.view(model=Root, name='webhook', request_method='GET')
    def webhook_get(context, request):
        req = WebObRequestAdapter(request)
-       resp = webhook.handle(req)
+       resp = bots.webhook(req)
        return morepath.Response(**resp.params())
    
    @App.view(model=Root, name='webhook', request_method='POST')
    def webhook_post(context, request):
        req = WebObRequestAdapter(request)
-       resp = webhook.handle(req)
+       resp = bots.webhook(req)
        return morepath.Response(**resp.params())
 
    if __name__ == '__main__':
-      webhook.initialize()
+      bots.initialize()
       morepath.run(App())
 
 Start the bot
@@ -185,8 +185,8 @@ Facebook Messenger Bot service. Parameters are:
 Messenger Bot with AMQP
 ========================
 
-``KombuWebHook`` provides an implementation of webhook with AMQP queuing. To
-use this, just switch ``WebHook`` to ``KombuWebHook`` and provide it with the
+``KombuBots`` provides an implementation of bot manager with AMQP queuing. To
+use this, just switch ``Bots`` to ``KombuBots`` and provide it with the
 uri to the transport. The queue is implemented using 
 `Kombu <http://kombu.rtfd.org>`_, so you may also use 
 `other transports
@@ -195,7 +195,7 @@ that are supported by Kombu
 
 .. code-block:: python
 
-   webhook = KombuWebHook(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
+   bots = KombuBots(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
        page_bots={
            '<PAGE ID>': (EchoBot, {'page_access_token': '<YOUR PAGE ACCESS TOKEN>'})
        },
