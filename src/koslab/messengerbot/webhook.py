@@ -40,9 +40,9 @@ class WebHook(object):
                             bot.message_hook(event)
                         elif event.get('delivery', None):
                             logger.debug(
-                                'Delivery confirmation hook: %s' % json.dumps(
+                                'Message delivered hook: %s' % json.dumps(
                                                                     event))
-                            bot.delivery_confirmation_hook(event)
+                            bot.message_delivered_hook(event)
                         elif event.get('postback', None):
                             logger.debug(
                                 'Postback hook: %s' % json.dumps(event))
@@ -50,6 +50,11 @@ class WebHook(object):
                         elif event.get('read', None):
                             logger.debug('Read hook: %s' % json.dumps(event))
                             bot.read_hook(event)
+                        elif event.get('account_linking', None):
+                            logger.debug(
+                                'Account linking hook: %s' % json.dumps(
+                                                                event))
+                            bot.account_linking_hook(event)
                         else:
                             logger.info(
                                 'Webhook received unknown '

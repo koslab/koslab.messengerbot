@@ -13,13 +13,16 @@ class BaseMessengerBot(object):
     def message_hook(self, event):
         pass
 
-    def delivery_confirmation_hook(self, event):
+    def message_delivered_hook(self, event):
         pass
 
     def postback_hook(self, event):
         pass
 
     def read_hook(self, event):
+        pass
+
+    def account_linking_hook(self, event):
         pass
 
     def send(self, recipient, message=None, sender_action=None):
