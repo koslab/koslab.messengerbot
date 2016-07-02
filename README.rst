@@ -32,10 +32,12 @@ Now lets write our EchoBot in ``echobot.py``
    # bot implementation
    class EchoBot(BaseMessengerBot):
 
+      GREETING_TEXT = 'Hello!. EchoBot, at your service!'
+      STARTUP_MESSAGE = {'text': 'Hi!, lets get started!' }
+
       def message_hook(self, event):
           text = event['message'].get('text', '')
           self.send(recipient=event['sender'], message={'text': text})
-
 
 
    # webhook implementation on morepath
@@ -65,6 +67,7 @@ Now lets write our EchoBot in ``echobot.py``
        return morepath.Response(**resp.params())
 
    if __name__ == '__main__':
+      webhook.initialize()
       morepath.run(App())
 
 Start the bot
@@ -77,6 +80,47 @@ Finally proceed to follow the `Messenger Platform Getting Started
 <https://developers.facebook.com/docs/messenger-platform/quickstart>`_
 guide to get your bot configured and registered in Facebook.
 
+Bot Configuration
+==================
+
+``POSTBACK_HANDLERS``
+   Dictionary mapping of payload to object method that will handle the payload.
+   Payload pattern may be defined as regex pattern. Default  value is:
+
+   .. code-block:: python
+
+   POSTBACK_HANDLERS = [
+       # triggers get started event
+      'messengerbot.get_started': 'start_hook'
+   ]
+
+``GREETING_TEXT``
+   `Greeting text
+   <https://developers.facebook.com/docs/messenger-platform/thread-settings/greeting-text>`_ 
+   for new threads. Default value is:
+
+   .. code-block:: python
+
+   GREETING_TEXT = 'Hello World!'
+
+``STARTUP_MESSAGE``
+	Message object to be sent when **Get Started** menu is clicked. Default value is:
+
+   .. code-block:: python
+
+   STARTUP_MESSAGE = { 'text' : 'Hello World!' }
+
+``PERSISTENT_MENU``
+	`Persistent menu <https://developers.facebook.com/docs/messenger-platform/thread-settings/persistent-menu>`_ ``call_for_action`` buttons configuration. Default value is:
+
+	.. code-block:: python
+
+	PERSISTENT_MENU = [{
+		'type': 'postback',
+		'title': 'Get Started',
+		'payload': 'messengerbot.get_started'
+	}]
+ 
 
 Bot Hooks
 ==========
@@ -93,7 +137,10 @@ Following are the list of hooks that can be implemented on the bot
 ``postback_hook``
    Handles `Postback Received
    <https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received>`_
-   event.
+   event. This hook have a default implementation which triggers methods based
+   on payload regex pattern. To define the mapping, configure
+   ``POSTBACK_HANDLERS`` class variable.
+
 
 ``authentication_hook``
    Handles `Authentication
@@ -153,11 +200,3 @@ that are supported by Kombu
            '<PAGE ID>': (EchoBot, {'page_access_token': '<YOUR PAGE ACCESS TOKEN>'})
        },
        transport='amqp://<username>:<password>@<host>:5672')
-
-When at bot startup, ensure that you start the consumer process by running
-
-.. code-block:: python
-
-   if __name__ == '__main__':
-      webhook.start_consumer()
-      morepath.run(App())

@@ -59,6 +59,16 @@ class WebHook(object):
             raise ValueError('Unable to select bot for page %s ' % page_id)
         return bot
 
+    def init_bots(self):
+        for page_id, (bot_class, bot_args) in self.page_bots.items():
+            print "Configuring %s for PageID:%s" % (
+                    bot_class.__name__, page_id)
+            bot = bot_class(**bot_args)
+            bot.configure()
+
+    def initialize(self):
+        self.init_bots()
+
 class KombuWebHook(WebHook):
     '''
     Web hook for Kombu queue
@@ -106,7 +116,8 @@ class KombuWebHook(WebHook):
                 while True:
                     conn.drain_events()
 
-    def start_consumer(self):
+    def initialize(self):
+        super(KombuWebHook, self).init_bots()
         print "Running %s Kombu consumer" % self
         p = Process(target=self.consume)
         p.start()

@@ -1,11 +1,29 @@
 import requests
 from koslab.messengerbot.logger import logger
 import json
+import re
 
 class BaseMessengerBot(object):
 
+    POSTBACK_HANDLERS = {
+        'messengerbot.get_started': 'start_hook'
+    }
+
+    GREETING_TEXT = 'Hello World!'
+    STARTUP_MESSAGE = { 'text': 'Hello World!' }
+    PERSISTENT_MENU = [{
+       'type': 'postback',
+       'title': 'Get Started',
+       'payload': 'messengerbot.get_started'
+    }]
+
+
     def __init__(self, page_access_token):
         self.page_access_token = page_access_token
+
+    def start_hook(self, event):
+        if self.STARTUP_MESSAGE is not None:
+            self.send(event['sender'], self.STARTUP_MESSAGE)
 
     def authentication_hook(self, event):
         pass
@@ -17,7 +35,10 @@ class BaseMessengerBot(object):
         pass
 
     def postback_hook(self, event):
-        pass
+        payload = event['postback']['payload']
+        for pyl, method in self.POSTBACK_HANDLERS.items():
+            if re.match(pyl, payload):
+                getattr(self, method)(event)
 
     def read_hook(self, event):
         pass
@@ -39,8 +60,7 @@ class BaseMessengerBot(object):
         url = 'https://graph.facebook.com/v2.6/me/messages'
         resp = requests.post('%s?access_token=%s' % (url, 
                     self.page_access_token), json=request_data)
-        if resp.status_code == 200:
-            data = resp.json()
+        return resp
 
     def handle_event(self, event):
         if event.get('optin', None):
@@ -64,3 +84,35 @@ class BaseMessengerBot(object):
         else:
             logger.info(
                 'Webhook received unknown messagingEvent %s' % json.dumps(event))
+
+    def thread_settings(self, setting):
+        url = 'https://graph.facebook.com/v2.6/me/thread_settings'
+        resp = requests.post('%s?access_token=%s' % (url,
+                            self.page_access_token), json=setting)
+        return resp
+
+    def configure(self):
+        # configure greeting
+        if self.GREETING_TEXT is not None:
+            self.thread_settings({
+                'setting_type': 'greeting', 
+                'greeting': {
+                    'text': self.GREETING_TEXT
+                }
+            })
+        # configure Get Started button
+        self.thread_settings({
+            'setting_type': 'call_to_actions',
+            'thread_state': 'new_thread',
+            'call_to_actions': [
+                { 'payload': 'messengerbot.get_started' }
+            ]
+        })
+
+        # configure Persistent Menu
+        if self.PERSISTENT_MENU is not None:
+            self.thread_settings({
+                'setting_type': 'call_to_actions',
+                'thread_state': 'existing_thread',
+                'call_to_actions': self.PERSISTENT_MENU
+            })
