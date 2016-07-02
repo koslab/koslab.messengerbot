@@ -72,6 +72,10 @@ Start the bot
 
    python echobot.py
 
+Finally proceed to follow the `Messenger Platform Getting Started
+<https://developers.facebook.com/docs/messenger-platform/quickstart>`_
+guide to get your bot configured and registered in Facebook.
+
 
 Bot Hooks
 ==========
