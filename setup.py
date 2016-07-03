@@ -36,7 +36,8 @@ setup(name='koslab.messengerbot',
       install_requires=[
           'setuptools',
           'kombu',
-          'requests'
+          'requests',
+          'beaker'
           # -*- Extra requirements: -*-
       ],
       entry_points="""

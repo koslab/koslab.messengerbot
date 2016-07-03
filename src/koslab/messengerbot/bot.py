@@ -3,13 +3,13 @@ from koslab.messengerbot.logger import logger
 import json
 import re
 import time
+from koslab.messengerbot.session import SessionManager
+from beaker.util import parse_cache_config_options
+import os
 
 class BaseMessengerBot(object):
 
-    POSTBACK_HANDLERS = {
-        'messengerbot.get_started': 'start_hook'
-    }
-
+    POSTBACK_HANDLERS = {}
     GREETING_TEXT = 'Hello World!'
     STARTUP_MESSAGE = { 'text': 'Hello World!' }
     PERSISTENT_MENU = [{
@@ -19,7 +19,13 @@ class BaseMessengerBot(object):
     }]
 
 
-    def __init__(self, page_access_token):
+    def __init__(self, page_access_token, session_opts=None):
+        self.session_opts = session_opts or {
+            'type': 'file',
+            'data_dir': '/tmp/messengerbot-cache/data',
+            'lock_dir': '/tmp/messengerbot-cache/lock'
+        }
+        self.sessionmgr = SessionManager(**self.session_opts)
         self.page_access_token = page_access_token
 
     def start_hook(self, event):
@@ -41,8 +47,10 @@ class BaseMessengerBot(object):
             ev = payload['event']
         except:
             ev = payload = event['postback']['payload']
+        if ev == 'messengerbot.get_started':
+            self.start_hook(event)
         for pyl, method in self.POSTBACK_HANDLERS.items():
-            if re.match(pyl, ev):
+            if pyl==ev or re.match(pyl, ev):
                 getattr(self, method)(event)
 
     def read_hook(self, event):
@@ -51,11 +59,10 @@ class BaseMessengerBot(object):
     def account_linking_hook(self, event):
         pass
 
-    def user_profile(self, user):
-        #
+    def user_profile(self, user, fields=None):
+        fields = fields or ['first_name','last_name','profile_pic','locale',
+                                'timezone','gender']
         url = 'https://graph.facebook.com/v2.6/%s' % user['id']
-        fields=['first_name','last_name','profile_pic','locale',
-                'timezone','gender']
         resp = requests.get(url, data={'fields': ','.join(fields)})
         resp_data = resp.json()
         if resp_data.get('error', None):
@@ -146,3 +153,6 @@ class BaseMessengerBot(object):
                 'thread_state': 'existing_thread',
                 'call_to_actions': self.PERSISTENT_MENU
             })
+
+    def get_session(self, event):
+        return self.sessionmgr.get_session(event)

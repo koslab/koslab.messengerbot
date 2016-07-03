@@ -89,10 +89,7 @@ Bot Configuration
 
    .. code-block:: python
 
-      POSTBACK_HANDLERS = [
-          # triggers get started event
-         'messengerbot.get_started': 'start_hook'
-      ]
+      POSTBACK_HANDLERS = {}
 
 ``GREETING_TEXT``
    `Greeting text
