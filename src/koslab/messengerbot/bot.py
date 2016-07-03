@@ -97,6 +97,8 @@ class BaseMessengerBot(object):
             if error['code'] == 4:
                 time.sleep(5)
                 self.send(recipient, message, sender_action)
+            else:
+                logger.error('Error sending message: %s' % json.dumps(error))
         return resp
 
     def reply(self, event, message=None):
