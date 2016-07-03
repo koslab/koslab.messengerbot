@@ -75,10 +75,11 @@ class KombuBots(Bots):
 
     :param: validation_token: hub validation token
     '''
-    def __init__(self, validation_token, page_bots, transport, exchange=None, queue=None):
+    def __init__(self, validation_token, page_bots, transport=None, 
+                exchange=None, queue=None):
         super(KombuBots, self).__init__(validation_token, page_bots)
         self.page_bots = page_bots
-        self.transport = transport
+        self.transport = transport or 'amqp://guest:guest@localhost:5672//'
         if exchange is None:
             exchange = Exchange('MessengerBot', 'direct', durable=True)
         self.exchange = exchange
