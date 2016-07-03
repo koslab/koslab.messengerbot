@@ -179,6 +179,16 @@ Facebook Messenger Bot service. Parameters are:
 
 **Note:** If ``message`` is defined, ``sender_action`` value will be ignored.
 
+A convenience method ``reply`` can also be used to send a response. Parameters
+are:
+
+``event``
+   Event object
+
+``message``
+   Accepts string, callable or message object. Strings are automatically 
+   converted into message object. Callable will be called with the event 
+   object as its parameter.
 
 Postback Payload
 ================

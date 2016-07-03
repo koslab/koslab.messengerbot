@@ -99,6 +99,15 @@ class BaseMessengerBot(object):
                 self.send(recipient, message, sender_action)
         return resp
 
+    def reply(self, event, message=None):
+        self.send(recipient=event['sender'], sender_action='typing_on')
+        if callable(message):
+            message = message(event)
+        if isinstance(message, str):
+            message = {'text': message}
+        res = self.send(recipient=event['sender'], message=message)
+        self.send(recipient=event['sender'], sender_action='typing_off')
+
     def handle_event(self, event):
         if event.get('optin', None):
             logger.debug('Authentication hook: %s' % json.dumps(event))
