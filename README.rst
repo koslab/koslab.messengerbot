@@ -195,7 +195,12 @@ Session Management is provided through a thin wrapper around `Beaker Cache
 <http://beaker.readthedocs.io/en/latest/caching.html>`_. Current conversation
 session variable may be acquired through ``get_session`` method on
 ``BaseMessengerBot`` class. Session object is ``dict``-like and may be treated
-as such
+as such.
+
+.. code-block:: python
+
+      def message_hook(self, event):
+          session = self.get_session(event)
 
 Messenger Bot with AMQP
 ========================
