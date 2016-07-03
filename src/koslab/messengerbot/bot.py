@@ -102,6 +102,7 @@ class BaseMessengerBot(object):
         return resp
 
     def reply(self, event, message=None):
+        self.send(recipient=event['sender'], sender_action='mark_seen')
         self.send(recipient=event['sender'], sender_action='typing_on')
         if callable(message):
             message = message(event)
