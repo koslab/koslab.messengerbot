@@ -188,6 +188,15 @@ Postback in JSON object format, an ``event`` key is required for routing postbac
 to the right handler by ``postback_hook``. For string postback values, the
 whole string is treated as the event key.
 
+Session 
+========
+
+Session Management is provided through a thin wrapper around `Beaker Cache
+<http://beaker.readthedocs.io/en/latest/caching.html>`_. Current conversation
+session variable may be acquired through ``get_session`` method on
+``BaseMessengerBot`` class. Session object is ``dict``-like and may be treated
+as such
+
 Messenger Bot with AMQP
 ========================
 
