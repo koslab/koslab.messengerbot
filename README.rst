@@ -230,3 +230,34 @@ that are supported by Kombu
            '<PAGE ID>': (EchoBot, {'page_access_token': '<YOUR PAGE ACCESS TOKEN>'})
        },
        transport='amqp://<username>:<password>@<host>:5672')
+
+Conversation API
+=================
+
+**NOTE:** This is a proposed spec. Not yet implemented. Inputs are welcomed.
+
+Spec::
+
+   conversation: myconversation
+   steps:
+      - message: What is your name?
+        type: text
+        store: name
+      - message: Please share your photo
+        type: image-attachment
+        store: photo
+      - message: Please share your location
+        type: location-attachment
+        store: location
+      - message: 
+          - type: generic-template
+            elements:
+               - title: Summary
+                 subtitle: Summary
+                 image_url: ${data['photo']['url']}
+                 buttons: 
+                     - type: postback
+                       title: Save
+                       payload: myconversation.save 
+
+            
