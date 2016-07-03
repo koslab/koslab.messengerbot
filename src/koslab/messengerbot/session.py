@@ -39,7 +39,7 @@ class Session(object):
         return self.get(key)
 
     def __setitem__(self, key, value):
-        return self.set(key, vallue)
+        return self.set(key, value)
 
     def __delitem__(self, key):
         return self.delete(key)

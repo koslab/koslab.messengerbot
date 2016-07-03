@@ -85,7 +85,7 @@ Bot Configuration
 
 ``POSTBACK_HANDLERS``
    Dictionary mapping of payload to object method that will handle the payload.
-   Payload pattern may be defined as regex pattern. Default  value is:
+   Default value is:
 
    .. code-block:: python
 
@@ -135,7 +135,7 @@ Following are the list of hooks that can be implemented on the bot
    Handles `Postback Received
    <https://developers.facebook.com/docs/messenger-platform/webhook-reference/postback-received>`_
    event. This hook have a default implementation which triggers methods based
-   on payload regex pattern. To define the mapping, configure
+   on payload value. To define the mapping, configure
    ``POSTBACK_HANDLERS`` class variable.
 
 

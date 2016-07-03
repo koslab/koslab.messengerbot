@@ -49,9 +49,9 @@ class BaseMessengerBot(object):
             ev = payload = event['postback']['payload']
         if ev == 'messengerbot.get_started':
             self.start_hook(event)
-        for pyl, method in self.POSTBACK_HANDLERS.items():
-            if pyl==ev or re.match(pyl, ev):
-                getattr(self, method)(event)
+        method = self.POSTBACK_HANDLERS.get(ev, None)
+        if method:
+            getattr(self, method)(event)
 
     def read_hook(self, event):
         pass
