@@ -10,10 +10,18 @@ def spawn_bot(bot_class, bot_args, event):
     bot = bot_class(**bot_args)
     bot.handle_event(event)
 
-def spawn_bot_amqp(bot_class, bot_args, event, message):
-    bot = bot_class(**bot_args)
+def spawn_bot_amqp(bot_class, bot_args, send_transport, send_exchange, send_queue, 
+                    event, message):
+    bot = bot_class(send_transport=send_transport, send_exchange=send_exchange, 
+            send_queue=send_queue, **bot_args)
     bot.handle_event(event)
     message.ack()
+
+def spawn_send_message_worker(event, message):
+    from koslab.messengerbot.bot import send_message
+    resp = send_message(**event)
+    if resp.status_code == 200:
+        message.ack()
 
 class Bots(object):
     '''
@@ -76,16 +84,16 @@ class KombuBots(Bots):
     :param: validation_token: hub validation token
     '''
     def __init__(self, validation_token, page_bots, transport=None, 
-                exchange=None, queue=None):
+                exchange=None, queue=None, send_transport=None,
+                send_exchange=None, send_queue=None):
         super(KombuBots, self).__init__(validation_token, page_bots)
         self.page_bots = page_bots
         self.transport = transport or 'amqp://guest:guest@localhost:5672//'
-        if exchange is None:
-            exchange = Exchange('MessengerBot', 'direct', durable=True)
-        self.exchange = exchange
-        if queue is None:
-            queue = Queue('messages', exchange=exchange, routing_key='messages')
-        self.queue = queue
+        self.exchange = exchange or 'MessengerBot'
+        self.queue = queue or 'messages'
+        self.send_transport = send_transport or transport
+        self.send_exchange = send_exchange or 'MessengerBot'
+        self.send_queue = send_queue or 'replies'
 
     def webhook_post(self, request):
         data = json.loads(request.body)
@@ -97,23 +105,41 @@ class KombuBots(Bots):
         return Response(status=200)
 
     def queue_events(self, events):
+        exchange = Exchange(self.exchange, 'direct', durable=True)
+        queue = Queue(self.queue, exchange=exchange, routing_key=self.queue)
         with Connection(self.transport) as conn:
             producer = conn.Producer(serializer='json')
             for event in events:
-                producer.publish(event, exchange=self.exchange, 
-                        routing_key=self.queue.routing_key,
-                        declare=[self.queue])
+                producer.publish(event, exchange=exchange, 
+                        routing_key=queue.routing_key,
+                        declare=[queue])
 
     def consume(self):
         def worker(event, message):
             page_id = event['recipient']['id']
             bot_class, bot_args = self.get_bot(page_id)
-            p = Process(target=spawn_bot_amqp, args=(bot_class, bot_args, event,
-                message))
+            p = Process(target=spawn_bot_amqp, args=(bot_class, bot_args, 
+                        self.transport, self.send_exchange, 
+                        self.send_queue, event, message))
             p.start()
 
+        exchange = Exchange(self.exchange, 'direct', durable=True)
+        queue = Queue(self.queue, exchange=exchange, routing_key=self.queue)
         with Connection(self.transport) as conn:
-            with conn.Consumer(self.queue, callbacks=[worker]) as consumer:
+            with conn.Consumer(queue, callbacks=[worker]) as consumer:
+                while True:
+                    conn.drain_events()
+
+    def sender(self):
+        def worker(event, message):
+            p = Process(target=spawn_send_message_worker, args=(event, message))
+            p.start()
+
+        exchange = Exchange(self.send_exchange, 'direct', durable=True)
+        queue = Queue(self.send_queue, exchange=exchange, 
+                        routing_key=self.send_queue)
+        with Connection(self.send_transport) as conn:
+            with conn.Consumer(queue, callbacks=[worker]) as consumer:
                 while True:
                     conn.drain_events()
 
@@ -122,3 +148,6 @@ class KombuBots(Bots):
         print "Running %s Kombu consumer" % self
         p = Process(target=self.consume)
         p.start()
+        print "Running %s Kombu message sender" % self
+        p2 = Process(target=self.sender)
+	p2.start()
