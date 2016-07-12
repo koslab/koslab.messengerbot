@@ -17,7 +17,7 @@ Lets install ``morepath`` and ``koslab.messengerbot``
 .. code-block:: bash
 
    pip install morepath
-   pip install https://github.com/koslab/koslab.messengerbot.git
+   pip install git+https://github.com/koslab/koslab.messengerbot.git
 
 Now lets write our EchoBot in ``echobot.py``
 
