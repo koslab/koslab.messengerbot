@@ -145,9 +145,9 @@ class KombuBots(Bots):
 
     def initialize(self):
         super(KombuBots, self).init_bots()
-        print "Running %s Kombu consumer" % self
+        print "Running %s message consumer" % self
         p = Process(target=self.consume)
         p.start()
-        print "Running %s Kombu message sender" % self
+        print "Running %s message sender" % self
         p2 = Process(target=self.sender)
 	p2.start()
