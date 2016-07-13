@@ -7,7 +7,8 @@ Introduction
 `Facebook Messenger Bot <https://developers.facebook.com/docs/messenger-platform/product-overview>`_
 easier by providing a framework that handles and abstract 
 the Bots API. It is originally developed using `Morepath <http://morepath.rtfd.org>`_
-as the web request processor, but this library should work with any Python web frameworks
+as the web request processor and the default hub implementation is on morepath, but this library should
+work with any Python web frameworks
 
 Example: Writing An Echo Bot on Morepath
 ==========================================
@@ -23,10 +24,7 @@ Now lets write our EchoBot in ``echobot.py``
 
 .. code-block:: python
 
-   import morepath
    from koslab.messengerbot.bots import Bots
-   from koslab.messengerbot.request import WebObRequestAdapter
-
    from koslab.messengerbot.bot import BaseMessengerBot
 
    # bot implementation
@@ -40,41 +38,26 @@ Now lets write our EchoBot in ``echobot.py``
           self.send(recipient=event['sender'], message={'text': text})
 
 
-   # webhook implementation on morepath
+And now lets write a hub config file, ``config.yml``.
 
-   bots = Bots(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
-       page_bots={
-           '<PAGE ID>': (EchoBot, {'page_access_token':'<YOUR PAGE ACCESS TOKEN>'})
-       })
+.. code-block:: yaml
 
-   class App(morepath.App):
-       pass
-   
-   @App.path(path='')
-   class Root(object):
-       pass
-   
-   @App.view(model=Root, name='webhook', request_method='GET')
-   def webhook_get(context, request):
-       req = WebObRequestAdapter(request)
-       resp = bots.webhook(req)
-       return morepath.Response(**resp.params())
-   
-   @App.view(model=Root, name='webhook', request_method='POST')
-   def webhook_post(context, request):
-       req = WebObRequestAdapter(request)
-       resp = bots.webhook(req)
-       return morepath.Response(**resp.params())
+   webhook: webhook
+   use_message_queue: false
+   message_queue: amqp://guest:guest@localhost:5672//
+   hub_verify_token: <MY-VERIFY-TOKEN>
+   bots:
+     - page_id: <PAGE-ID>
+       title: EchoBot
+       class: echobot:EchoBot
+       access_token: <PAGE-ACCESS-TOKEN>
 
-   if __name__ == '__main__':
-      bots.initialize()
-      morepath.run(App())
 
 Start the bot
 
 .. code-block:: bash
 
-   python echobot.py
+   messengerbot_hub config.yml
 
 Finally proceed to follow the `Messenger Platform Getting Started
 <https://developers.facebook.com/docs/messenger-platform/quickstart>`_
@@ -215,47 +198,24 @@ as such.
 Messenger Bot with AMQP
 ========================
 
-``KombuBots`` provides an implementation of bot manager with AMQP queuing. To
-use this, just switch ``Bots`` to ``KombuBots`` and provide it with the
-uri to the transport. The queue is implemented using 
+AMQP queuing is supported by the hub process. To use this, in ``config.yml``
+simply set ``use_message_queue`` to ``true`` and configure the transport uri 
+to the message queue on ``message_queue`` setting. The queue is implemented using 
 `Kombu <http://kombu.rtfd.org>`_, so you may also use 
 `other transports
 <https://kombu.readthedocs.io/en/latest/userguide/connections.html#amqp-transports>`_
 that are supported by Kombu
 
-.. code-block:: python
-
-   bots = KombuBots(validation_token='<YOUR WEBHOOK VALIDATION TOKEN>',
-       page_bots={
-           '<PAGE ID>': (EchoBot, {'page_access_token': '<YOUR PAGE ACCESS TOKEN>'})
-       },
-       transport='amqp://<username>:<password>@<host>:5672')
-
-
-Bots Manager Service
-=====================
-
-A configuration-driven morepath daemon is also available to run your bots using
-``messengerbot_hub`` command. Below is a sample ``config.yml``:
-
 .. code-block:: yaml
 
-   webhook: webhook
    use_message_queue: true
    message_queue: amqp://guest:guest@localhost:5672//
-   hub_verify_token: <MY-VERIFY-TOKEN>
-   bots:
-     - page_id: <PAGE-ID>
-       title: EchoBot
-       class: mybot.echobot:EchoBot
-       access_token: <PAGE-ACCESS-TOKEN>
 
-To start up, simply run, ``messengerbot_hub config.yml``
    
 Conversation API
 =================
 
-**NOTE:** This is a proposed spec. Not yet implemented. Inputs are welcomed.
+**NOTE:** This is a draft spec. Not yet implemented. Inputs are welcomed.
 
 Spec
 
