@@ -16,7 +16,7 @@ long_description = (
 
 setup(name='koslab.messengerbot',
       version=version,
-      description="",
+      description="Facebook messenger bot framework",
       long_description=long_description,
       # Get more strings from
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
