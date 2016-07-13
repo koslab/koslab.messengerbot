@@ -37,10 +37,12 @@ setup(name='koslab.messengerbot',
           'setuptools',
           'kombu',
           'requests',
-          'beaker'
+          'beaker',
+          'morepath',
+          'PyYAML'
           # -*- Extra requirements: -*-
       ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
-      )
+      entry_points={
+          'console_scripts':
+              'bots_manager=koslab.messengerbot.scripts:run_manager'
+      })
