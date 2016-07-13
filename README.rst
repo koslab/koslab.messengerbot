@@ -10,10 +10,10 @@ the Bots API. It is originally developed using `Morepath <http://morepath.rtfd.o
 as the web request processor and the default hub implementation is on morepath, but this library should
 work with any Python web frameworks
 
-Example: Writing An Echo Bot on Morepath
-==========================================
+Example: Writing An Echo Bot 
+=============================
 
-Lets install ``morepath`` and ``koslab.messengerbot``
+Lets install ``koslab.messengerbot``
 
 .. code-block:: bash
 
