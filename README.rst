@@ -23,7 +23,6 @@ Now lets write our EchoBot in ``echobot.py``
 
 .. code-block:: python
 
-   from koslab.messengerbot.bots import Bots
    from koslab.messengerbot.bot import BaseMessengerBot
 
    # bot implementation
