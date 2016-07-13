@@ -236,7 +236,7 @@ Bots Manager Service
 =====================
 
 A configuration-driven morepath daemon is also available to run your bots using
-`messengerbot_hub` command. Below is a sample `config.yml`:
+``messengerbot_hub`` command. Below is a sample ``config.yml``:
 
 .. code-block:: yaml
 
@@ -250,7 +250,7 @@ A configuration-driven morepath daemon is also available to run your bots using
        class: mybot.echobot:EchoBot
        access_token: <PAGE-ACCESS-TOKEN>
 
-To start up, simply run, `messengerbot_hub config.yml`
+To start up, simply run, ``messengerbot_hub config.yml``
    
 Conversation API
 =================
