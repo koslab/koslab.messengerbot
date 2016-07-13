@@ -1,10 +1,10 @@
 import morepath
-from koslab.messengerbot.manager import App
+from koslab.messengerbot.hub import App
 import yaml
 import sys
 import os
 
-def run_manager():
+def start_hub():
     if len(sys.argv) == 1:
         print "%s [config.yml]"
         print "Config file is required"
