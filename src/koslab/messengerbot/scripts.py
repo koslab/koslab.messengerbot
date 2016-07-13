@@ -6,8 +6,7 @@ import os
 
 def start_hub():
     if len(sys.argv) == 1:
-        print "%s [config.yml]"
-        print "Config file is required"
+        print "%s [config.yml]" % sys.argv[0]
         sys.exit(1)
 
     sys.path.append(os.getcwd())
