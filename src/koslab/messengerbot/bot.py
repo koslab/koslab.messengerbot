@@ -62,7 +62,7 @@ class BaseMessengerBot(object):
 
     def start_hook(self, event):
         if self.STARTUP_MESSAGE is not None:
-            self.send(event['sender'], self.STARTUP_MESSAGE)
+            self.reply(event, self.STARTUP_MESSAGE)
 
     def authentication_hook(self, event):
         pass
