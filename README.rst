@@ -231,6 +231,27 @@ that are supported by Kombu
        },
        transport='amqp://<username>:<password>@<host>:5672')
 
+
+Bots Manager Service
+=====================
+
+A configuration-driven morepath daemon is also available to run your bots using
+`messengerbot_hub` command. Below is a sample `config.yml`:
+
+.. code-block:: yaml
+
+   webhook: webhook
+   use_message_queue: true
+   message_queue: amqp://guest:guest@localhost:5672//
+   hub_verify_token: <MY-VERIFY-TOKEN>
+   bots:
+     - page_id: <PAGE-ID>
+       title: EchoBot
+       class: mybot.echobot:EchoBot
+       access_token: <PAGE-ACCESS-TOKEN>
+
+To start up, simply run, `messengerbot_hub config.yml`
+   
 Conversation API
 =================
 

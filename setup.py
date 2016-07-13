@@ -44,5 +44,5 @@ setup(name='koslab.messengerbot',
       ],
       entry_points={
           'console_scripts':
-              'bots_manager=koslab.messengerbot.scripts:run_manager'
+              'messengerbot_hub=koslab.messengerbot.scripts:run_manager'
       })

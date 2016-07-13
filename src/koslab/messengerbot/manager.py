@@ -12,12 +12,15 @@ class App(morepath.App):
             'page_bots': self.bots_config(config)
         }
         if config.get('use_message_queue', False):
-            coordinator_klass = KombuBot
+            coordinator_klass = KombuBots
             params['transport'] = config.get('message_queue', None)
         else:
             coordinator_klass = Bots
 
         self.bots = coordinator_klass(**params)
+        print("=== Configuring bots ===")
+        self.bots.initialize()
+        print("=== Starting up webhook on /%s ===" % config['webhook'])
 
     def bots_config(self, config):
         bots = config.get('bots', [])
@@ -30,10 +33,6 @@ class App(morepath.App):
             kwargs['page_access_token'] = bot['access_token']
             result[bot['page_id']] = (klass, kwargs)
         return result
-
-    def run(self, *args, **kwargs):
-        super(App, self).run(*args, **kwargs)
-        self.bots.initialize()
 
 class Root(object):
     pass
