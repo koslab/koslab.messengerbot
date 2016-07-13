@@ -31,7 +31,7 @@ class App(morepath.App):
             klass = getattr(m, bot_class)
             kwargs = bot.get('args', {})
             kwargs['page_access_token'] = bot['access_token']
-            result[bot['page_id']] = (klass, kwargs)
+            result[str(bot['page_id'])] = (klass, kwargs)
         return result
 
 class Root(object):
