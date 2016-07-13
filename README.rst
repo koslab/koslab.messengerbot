@@ -257,7 +257,9 @@ Conversation API
 
 **NOTE:** This is a proposed spec. Not yet implemented. Inputs are welcomed.
 
-Spec::
+Spec
+
+.. code-block:: yaml
 
    conversation: myconversation
    steps:
