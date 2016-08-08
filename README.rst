@@ -65,12 +65,23 @@ Bot Configuration
 ==================
 
 ``POSTBACK_HANDLERS``
-   Dictionary mapping of payload to object method that will handle the payload.
-   Default value is:
+   Dictionary mapping of payload to name of object method that will handle the 
+   payload. Default value is:
 
    .. code-block:: python
 
       POSTBACK_HANDLERS = {}
+
+   Example:
+
+   .. code-block:: python
+      
+      POSTBACK_HANDLERS = {
+         'mypostback': 'mypostback_hook'
+      }
+
+      def mypostback_hook(self, event):
+          ...
 
 ``GREETING_TEXT``
    `Greeting text
