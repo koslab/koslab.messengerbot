@@ -3,6 +3,7 @@ from koslab.messengerbot.logger import logger
 from kombu import Connection, Exchange, Queue
 from multiprocessing import Process, Pool
 import json
+import signal
 
 __all__ = ['Bots', 'KombuBots']
 
@@ -56,8 +57,13 @@ class Bots(object):
                 timestamp = entry['time']
                 bot_class, bot_args = self.get_bot(page_id)
                 for event in entry['messaging']:
-                    Process(target=spawn_bot, 
-                            args=(bot_class, bot_args, event)).start()
+                    p = Process(target=spawn_bot, 
+                            args=(bot_class, bot_args, event))
+                    p.start()
+                    def stop_bot(signum, frame):
+                        p.terminate()
+                        p.join()
+                    signal.signal(signal.SIGTERM, stop_bot)
 
         return Response(status=200)
 
@@ -122,6 +128,10 @@ class KombuBots(Bots):
                         self.transport, self.send_exchange, 
                         self.send_queue, event, message))
             p.start()
+            def stop_worker(signum, frame):
+                p.terminate()
+                p.join()
+            signal.signal(signal.SIGTERM, stop_worker)
 
         exchange = Exchange(self.exchange, 'direct', durable=True)
         queue = Queue(self.queue, exchange=exchange, routing_key=self.queue)
@@ -134,6 +144,11 @@ class KombuBots(Bots):
         def worker(event, message):
             p = Process(target=spawn_send_message_worker, args=(event, message))
             p.start()
+            def stop_worker(signum, frame):
+                p.terminate()
+                p.join()
+            signal.signal(signal.SIGTERM, stop_worker)
+
 
         exchange = Exchange(self.send_exchange, 'direct', durable=True)
         queue = Queue(self.send_queue, exchange=exchange, 
@@ -146,8 +161,14 @@ class KombuBots(Bots):
     def initialize(self):
         super(KombuBots, self).init_bots()
         print "Running %s message consumer" % self
-        p = Process(target=self.consume)
-        p.start()
+        p1 = Process(target=self.consume)
+        p1.start()
         print "Running %s message sender" % self
         p2 = Process(target=self.sender)
-	p2.start()
+        p2.start()
+        def stop_sender_consumer(signum, frame):
+            p1.terminate()
+            p1.join()
+            p2.terminate()
+            p2.join()
+        signal.signal(signal.SIGTERM, stop_sender_consumer)
