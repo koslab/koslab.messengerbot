@@ -15,4 +15,4 @@ def start_hub():
     def config_section():
         return config
 
-    morepath.run(App(config))
+    morepath.run(App(config), ignore_cli=True)

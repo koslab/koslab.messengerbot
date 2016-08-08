@@ -4,7 +4,8 @@ Changelog
 1.0b4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Ignore CLI when starting up hub
+  [Izhar Firdaus]
 
 
 1.0b3 (2016-08-08)
