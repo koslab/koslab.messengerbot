@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b4 (unreleased)
+1.0b4 (2016-08-08)
 ------------------
 
 - Ignore CLI when starting up hub
