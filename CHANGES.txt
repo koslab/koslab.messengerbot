@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b3 (unreleased)
+1.0b3 (2016-08-08)
 ------------------
 
 - Ensure that all child processes are killed when parent is terminated.
