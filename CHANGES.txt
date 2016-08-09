@@ -4,7 +4,8 @@ Changelog
 1.0b5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Rearrange priority of event handlers so that quick reply postbacks are 
+  caught [Izhar Firdaus]
 
 
 1.0b4 (2016-08-08)
