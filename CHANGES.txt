@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b5 (unreleased)
+1.0b5 (2016-08-09)
 ------------------
 
 - Rearrange priority of event handlers so that quick reply postbacks are 
